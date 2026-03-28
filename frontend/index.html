@@ -10,6 +10,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@web3auth/base@latest/dist/base.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@latest/dist/ethereumProvider.umd.min.js"></script>
 <script src="auth-web3auth.js"></script>
+<script src="calendar-integration.js"></script>
+<script src="agent-calendar.js"></script>
+<script src="google-oauth-calendar.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1125,6 +1128,30 @@ footer {
 .app-tx-chain-tag.pub { color: var(--blue); }
 
 /* === AI AGENT === */
+.calendar-connect-btn {
+  position: fixed;
+  bottom: 100px;
+  right: 28px;
+  z-index: 250;
+  padding: 12px 20px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(110, 255, 158, 0.25);
+  transition: all 0.3s;
+}
+
+.calendar-connect-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 32px rgba(110, 255, 158, 0.35);
+  background: #7fff9f;
+}
+
 .agent-fab {
   position: fixed;
   bottom: 28px;
@@ -1694,6 +1721,7 @@ footer {
 
 <!-- AI AGENT -->
 <button class="agent-fab" id="agentFab" title="AI Finance Agent">✦</button>
+<button class="calendar-connect-btn" id="connectCalendarBtn" style="display:none;" title="Connect Real Google Calendar">📅 Connect Calendar</button>
 <div class="agent-panel" id="agentPanel">
   <div class="agent-panel-header">
     <div>
@@ -1988,13 +2016,30 @@ agentFab.addEventListener('click', () => {
 });
 
 function initAgent() {
-  addAgentMsg('ai', `I'm your personal financial planner. I understand your complete financial picture across all platforms through OpenClaw integration — spending patterns, income, budgets, and goals.\n\nI can help you set budgets, track spending, plan for goals, and make smarter financial decisions. Your data stays private and encrypted.`);
-  showSuggestions([
+  const hasCalendar = window.raylsCalendar && window.raylsCalendar.isCalendarEnabled;
+  
+  let welcomeMsg = `I'm your personal financial planner. I understand your complete financial picture across all platforms through OpenClaw integration — spending patterns, income, budgets, and goals.`;
+  
+  if (hasCalendar) {
+    welcomeMsg += `\n\n📅 I also have access to your Google Calendar and can help you manage events, check your schedule, and plan your time.`;
+  }
+  
+  welcomeMsg += `\n\nI can help you set budgets, track spending, plan for goals, and make smarter financial decisions. Your data stays private and encrypted.`;
+  
+  addAgentMsg('ai', welcomeMsg);
+  
+  const suggestions = [
     'Help me set a budget',
     'Where am I overspending?',
     'Plan a savings goal',
     'Review my spending habits'
-  ]);
+  ];
+  
+  if (hasCalendar) {
+    suggestions.push('What\'s on my calendar today?');
+  }
+  
+  showSuggestions(suggestions);
 }
 
 function addAgentMsg(role, text) {
@@ -2072,7 +2117,7 @@ function matchResponse(input) {
   return agentResponses.default;
 }
 
-function sendAgentMessage(text) {
+async function sendAgentMessage(text) {
   addAgentMsg('user', text);
   agentSuggestions.innerHTML = '';
   agentInput.value = '';
@@ -2080,7 +2125,48 @@ function sendAgentMessage(text) {
 
   showTyping();
 
-  // Simulate thinking time
+  // Check if this is a calendar command first
+  if (window.agentCalendar && window.agentCalendar.isCalendarCommand(text)) {
+    try {
+      const calendarResponse = await window.agentCalendar.handleCalendarCommand(text);
+      
+      if (calendarResponse) {
+        hideTyping();
+        addAgentMsg('ai', calendarResponse.message);
+        
+        // Add calendar-specific suggestions
+        if (calendarResponse.type === 'calendar') {
+          showSuggestions([
+            'What\'s on my calendar today?',
+            'Show upcoming events',
+            'Create a new event',
+            'Back to finance help'
+          ]);
+        } else if (calendarResponse.type === 'error') {
+          showSuggestions([
+            'Help me set a budget',
+            'Where am I overspending?',
+            'Plan a savings goal'
+          ]);
+        }
+        agentSend.disabled = false;
+        return;
+      }
+    } catch (error) {
+      console.error('Calendar command error:', error);
+      hideTyping();
+      addAgentMsg('ai', `I had trouble accessing your calendar: ${error.message}\n\nMake sure you're signed in with Google and have granted calendar permissions.`);
+      showSuggestions([
+        'Help me set a budget',
+        'Where am I overspending?',
+        'Plan a savings goal'
+      ]);
+      agentSend.disabled = false;
+      return;
+    }
+  }
+
+  // Simulate thinking time for financial queries
   const delay = 800 + Math.random() * 1200;
   setTimeout(() => {
     hideTyping();
@@ -2100,6 +2186,41 @@ agentInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     const val = agentInput.value.trim();
     if (val) sendAgentMessage(val);
+  }
+});
+
+// === CALENDAR CONNECTION BUTTON ===
+const connectCalendarBtn = document.getElementById('connectCalendarBtn');
+
+// Show button when authenticated and calendar is in demo mode
+window.addEventListener('raylsfi-auth-change', (event) => {
+  if (event.detail.isAuthenticated) {
+    // Wait a bit for calendar to initialize
+    setTimeout(() => {
+      if (window.raylsCalendar && window.raylsCalendar.demoMode) {
+        connectCalendarBtn.style.display = 'block';
+      }
+    }, 1000);
+  } else {
+    connectCalendarBtn.style.display = 'none';
+  }
+});
+
+// Hide button when real calendar is connected
+window.addEventListener('raylsfi-calendar-ready', (event) => {
+  if (event.detail.enabled && !event.detail.demoMode) {
+    connectCalendarBtn.style.display = 'none';
+    console.log('✅ Real Google Calendar connected!');
+  }
+});
+
+// Handle button click - request calendar access
+connectCalendarBtn.addEventListener('click', () => {
+  if (window.googleCalendarAuth) {
+    console.log('🔑 Requesting Google Calendar access...');
+    window.googleCalendarAuth.requestCalendarAccess();
+  } else {
+    console.error('Google Calendar Auth not initialized');
   }
 });
 </script>

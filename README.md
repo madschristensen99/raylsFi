@@ -21,6 +21,7 @@ A unified banking account that eliminates the checking/savings/brokerage split. 
 - **ProtocolTreasury.sol** - Platform revenue collection
 - **ShareToken.sol** - Fractional RWA tokenization
 - **AIAttestation.sol** - AI agent attestation registry
+- **PlaytestVault.sol** - Simple native currency vault for testing deposits/withdrawals
 
 ## Quick Start
 
@@ -97,6 +98,7 @@ This deploys:
 | YieldRouter | `0xd7bd1e8531f79a9fb59b3245a37d8c4602c5b96b` | [View](https://testnet-explorer.rayls.com/address/0xd7bd1e8531f79a9fb59b3245a37d8c4602c5b96b) |
 | ShareToken | `0x3960a2a73b6abbb69f352a691ef5a9339f763c8c` | [View](https://testnet-explorer.rayls.com/address/0x3960a2a73b6abbb69f352a691ef5a9339f763c8c) |
 | AIAttestation | `0x5c8cec43ce559b90ffb4c3f15fabede220cc24c0` | [View](https://testnet-explorer.rayls.com/address/0x5c8cec43ce559b90ffb4c3f15fabede220cc24c0) |
+| **PlaytestVault** | `0x973e77c26A669184a83d49d3104d5A562cc03771` | [View](https://testnet-explorer.rayls.com/address/0x973e77c26A669184a83d49d3104d5A562cc03771) |
 
 ### Privacy Node
 
@@ -203,6 +205,49 @@ uint256 yield = yieldRouter.getUserYield(userAddress);
 
 // Get current yield rate
 uint256 rate = yieldRouter.getYieldRate();
+```
+
+### Public Chain - PlaytestVault
+
+Simple vault for testing native currency deposits and withdrawals:
+
+```solidity
+// Deposit native currency
+playtestVault.deposit{value: 1 ether}();
+
+// Withdraw specific amount
+playtestVault.withdraw(0.5 ether);
+
+// Withdraw all balance
+playtestVault.withdrawAll();
+
+// Check balance
+uint256 balance = playtestVault.getBalance(userAddress);
+
+// Check contract balance
+uint256 total = playtestVault.getContractBalance();
+```
+
+**Events:**
+- `Deposited(address indexed user, uint256 amount, uint256 timestamp)`
+- `Withdrawn(address indexed user, uint256 amount, uint256 timestamp)`
+
+**Quick Test:**
+```bash
+# Deposit 0.1 ETH
+cast send 0x973e77c26A669184a83d49d3104d5A562cc03771 "deposit()" \
+  --value 0.1ether \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL \
+  --private-key $DEPLOYER_PRIVATE_KEY
+
+# Check balance
+cast call 0x973e77c26A669184a83d49d3104d5A562cc03771 "getBalance(address)(uint256)" $YOUR_ADDRESS \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL
+
+# Withdraw 0.05 ETH
+cast send 0x973e77c26A669184a83d49d3104d5A562cc03771 "withdraw(uint256)" 50000000000000000 \
+  --rpc-url $PUBLIC_CHAIN_RPC_URL \
+  --private-key $DEPLOYER_PRIVATE_KEY
 ```
 
 ## User Flows
