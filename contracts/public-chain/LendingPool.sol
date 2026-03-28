@@ -166,6 +166,12 @@ contract LendingPool is ReentrancyGuard, Ownable {
         total = principal + interest;
     }
 
+    function getUserBorrow(address user) external view returns (uint256 borrowed, uint256 collateral) {
+        BorrowPosition memory position = borrows[user];
+        borrowed = position.borrowed + position.accruedInterest;
+        collateral = position.collateral;
+    }
+
     function _updateInterest(address user) internal {
         UserDeposit storage deposit = deposits[user];
         
