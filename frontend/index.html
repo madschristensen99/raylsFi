@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unified — One Account. Every Function.</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #050507;
+  --surface: #0c0c10;
+  --surface-2: #131318;
+  --border: #1e1e28;
+  --border-light: #2a2a38;
+  --text: #e8e6f0;
+  --text-dim: #7a7890;
+  --text-muted: #4a4860;
+  --accent: #6eff9e;
+  --accent-dim: #6eff9e22;
+  --accent-glow: #6eff9e15;
+  --red: #ff6b6b;
+  --amber: #ffb86c;
+  --blue: #6ec1ff;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Mono', monospace;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === NOISE OVERLAY === */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+/* === LAYOUT === */
+section { position: relative; }
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* === HEADER === */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 20px 0;
+  background: rgba(5, 5, 7, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--accent);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 12px var(--accent); }
+  50% { opacity: 0.6; box-shadow: 0 0 4px var(--accent); }
+}
+
+nav { display: flex; gap: 32px; align-items: center; }
+
+nav a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+nav a:hover { color: var(--text); }
+
+.nav-cta {
+  color: var(--accent) !important;
+  border: 1px solid var(--accent);
+  padding: 8px 20px;
+  border-radius: 4px;
+  transition: all 0.3s !important;
+}
+
+.nav-cta:hover {
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+}
+
+/* === HERO === */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 80px;
+  position: relative;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.hero-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fade-up 0.8s 0.2s forwards;
+}
+
+.hero h1 {
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: clamp(48px, 6vw, 80px);
+  line-height: 1.05;
+  letter-spacing: -2px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fade-up 0.8s 0.4s forwards;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text-dim);
+  max-width: 420px;
+  opacity: 0;
+  animation: fade-up 0.8s 0.6s forwards;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === HERO DEMO CARD === */
+.demo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fade-up 0.8s 0.8s forwards;
+}
+
+.demo-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.demo-card-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.demo-card-status {
+  font-size: 11px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.demo-card-status::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+
+.balance-section {
+  padding: 32px 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.balance-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.balance-amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.balance-amount .cents {
+  font-size: 24px;
+  color: var(--text-dim);
+}
+
+.balance-change {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--accent);
+}
+
+.account-rows {
+  padding: 0;
+}
+
+.account-row {
+  padding: 16px 24px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.account-row:last-child { border-bottom: none; }
+.account-row:hover { background: var(--surface-2); }
+
+.row-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border: 1px solid var(--border);
+}
+
+.row-icon.checking { background: #6eff9e10; color: var(--accent); }
+.row-icon.savings { background: #6ec1ff10; color: var(--blue); }
+.row-icon.invest { background: #ffb86c10; color: var(--amber); }
+
+.row-info { display: flex; flex-direction: column; gap: 2px; }
+
+.row-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.row-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.row-amount {
+  font-size: 14px;
+  font-weight: 500;
+  text-align: right;
+}
+
+.row-yield {
+  font-size: 10px;
+  color: var(--accent);
+  text-align: right;
+}
+
+/* === HOW IT WORKS === */
+.how-section {
+  padding: 140px 0;
+  border-top: 1px solid var(--border);
+}
+
+.section-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 400;
+  letter-spacing: -1px;
+  margin-bottom: 64px;
+  max-width: 600px;
+}
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.flow-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 40px 32px;
+  position: relative;
+  transition: all 0.4s;
+}
+
+.flow-card:hover {
+  background: var(--surface-2);
+  border-color: var(--border-light);
+}
+
+.flow-card:hover .flow-number { color: var(--accent); }
+
+.flow-number {
+  font-family: 'Syne', sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  transition: color 0.4s;
+}
+
+.flow-heading {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.flow-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-dim);
+}
+
+.flow-tag {
+  margin-top: 20px;
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 3px;
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+}
+
+.flow-tag.private { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.flow-tag.public { border-color: var(--blue); color: var(--blue); background: #6ec1ff12; }
+
+/* === ARCHITECTURE === */
+.arch-section {
+  padding: 140px 0;
+  border-top: 1px solid var(--border);
+}
+
+.arch-diagram {
+  margin-top: 64px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 48px;
+  position: relative;
+  overflow: hidden;
+}
+
+.arch-diagram::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 20% 50%, var(--accent-glow), transparent 50%),
+    radial-gradient(ellipse at 80% 50%, #6ec1ff08, transparent 50%);
+  pointer-events: none;
+}
+
+.arch-layers {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 0;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.arch-layer {
+  padding: 24px;
+}
+
+.arch-layer-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arch-layer-title.private-t { color: var(--accent); }
+.arch-layer-title.public-t { color: var(--blue); }
+
+.arch-item {
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  background: var(--bg);
+  transition: all 0.3s;
+}
+
+.arch-item:hover {
+  border-color: var(--border-light);
+  transform: translateX(4px);
+}
+
+.arch-item .label {
+  color: var(--text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.arch-bridge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bridge-line {
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--accent), var(--blue));
+  opacity: 0.4;
+}
+
+.bridge-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--bg);
+  animation: bridge-pulse 3s ease-in-out infinite;
+}
+
+@keyframes bridge-pulse {
+  0%, 100% { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-dim); }
+  50% { border-color: var(--blue); box-shadow: 0 0 8px #6ec1ff22; }
+}
+
+/* === REVENUE MODEL === */
+.revenue-section {
+  padding: 140px 0;
+  border-top: 1px solid var(--border);
+}
+
+.revenue-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  margin-top: 64px;
+  align-items: start;
+}
+
+.revenue-left {}
+
+.revenue-headline {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.3;
+  margin-bottom: 24px;
+}
+
+.revenue-body {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-dim);
+  margin-bottom: 32px;
+}
+
+.revenue-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 24px;
+  border-radius: 8px;
+}
+
+.stat-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.revenue-visual {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.rv-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.rv-body { padding: 24px; }
+
+.yield-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.yield-bar:last-child { margin-bottom: 0; }
+
+.yield-label {
+  font-size: 12px;
+  width: 100px;
+  flex-shrink: 0;
+  color: var(--text-dim);
+}
+
+.yield-track {
+  flex: 1;
+  height: 28px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.yield-fill {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.yield-fill.lending { background: linear-gradient(90deg, #6eff9e33, #6eff9e18); color: var(--accent); }
+.yield-fill.lp { background: linear-gradient(90deg, #6ec1ff33, #6ec1ff18); color: var(--blue); }
+.yield-fill.spread { background: linear-gradient(90deg, #ffb86c33, #ffb86c18); color: var(--amber); }
+
+.rv-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.rv-footer .label { color: var(--text-muted); }
+.rv-footer .value { color: var(--accent); font-weight: 500; }
+
+/* === LIVE TX FEED === */
+.tx-section {
+  padding: 140px 0;
+  border-top: 1px solid var(--border);
+}
+
+.tx-feed {
+  margin-top: 48px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.tx-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tx-header-left {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.tx-live-badge {
+  font-size: 10px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.tx-live-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+.tx-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 100px 80px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  align-items: center;
+  transition: background 0.2s;
+  animation: tx-appear 0.4s ease-out;
+}
+
+.tx-row:hover { background: var(--surface-2); }
+
+@keyframes tx-appear {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tx-time { color: var(--text-muted); font-size: 11px; }
+.tx-type { font-weight: 500; }
+.tx-type.send { color: var(--red); }
+.tx-type.receive { color: var(--accent); }
+.tx-type.lend { color: var(--blue); }
+.tx-type.invest { color: var(--amber); }
+.tx-amount { text-align: right; }
+.tx-chain { text-align: right; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+.tx-chain.priv { color: var(--accent); }
+.tx-chain.pub { color: var(--blue); }
+.tx-status {
+  text-align: right;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* === FOOTER === */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 64px 0;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 64px;
+}
+
+.footer-about {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-dim);
+  max-width: 360px;
+  margin-top: 16px;
+}
+
+.footer-col-title {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.footer-col a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 12px;
+  transition: color 0.2s;
+}
+
+.footer-col a:hover { color: var(--text); }
+
+.footer-bottom {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.built-on {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.built-on .rayls-badge {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* === APP OVERLAY === */
+.app-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--bg);
+  overflow-y: auto;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s;
+  pointer-events: none;
+}
+
+.app-overlay.open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+.app-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(5, 5, 7, 0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.app-topbar .logo { font-size: 18px; }
+
+.app-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-family: 'DM Mono', monospace;
+}
+
+.app-close:hover {
+  border-color: var(--border-light);
+  color: var(--text);
+  background: var(--surface);
+}
+
+.app-body {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 32px 120px;
+}
+
+.app-greeting {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  opacity: 0;
+  animation: fade-up 0.5s 0.15s forwards;
+}
+
+.app-welcome {
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  font-weight: 400;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fade-up 0.5s 0.25s forwards;
+}
+
+.app-balance-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 36px;
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  animation: fade-up 0.5s 0.35s forwards;
+}
+
+.app-balance-card::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--accent-glow), transparent 70%);
+  pointer-events: none;
+}
+
+.app-bal-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+
+.app-bal-amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  margin-bottom: 14px;
+}
+
+.app-bal-amount .cents {
+  font-size: 30px;
+  color: var(--text-dim);
+}
+
+.app-bal-meta {
+  display: flex;
+  gap: 24px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.app-bal-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-bal-meta-item .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.app-bal-meta-item .val { color: var(--text); font-weight: 500; }
+.app-bal-meta-item .lbl { color: var(--text-muted); }
+
+.app-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fade-up 0.5s 0.45s forwards;
+}
+
+.app-action-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.25s;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+}
+
+.app-action-btn:hover {
+  border-color: var(--border-light);
+  background: var(--surface-2);
+  transform: translateY(-2px);
+}
+
+.app-action-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.app-action-icon.a-send { background: #ff6b6b14; color: var(--red); }
+.app-action-icon.a-receive { background: #6eff9e14; color: var(--accent); }
+.app-action-icon.a-invest { background: #ffb86c14; color: var(--amber); }
+.app-action-icon.a-swap { background: #6ec1ff14; color: var(--blue); }
+
+.app-action-label {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+}
+
+.app-accounts-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 40px;
+  opacity: 0;
+  animation: fade-up 0.5s 0.5s forwards;
+}
+
+.app-acct-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.25s;
+}
+
+.app-acct-card:hover { border-color: var(--border-light); }
+
+.app-acct-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.app-acct-name {
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.app-acct-badge {
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.app-acct-badge.priv { color: var(--accent); border: 1px solid var(--accent); background: var(--accent-dim); }
+.app-acct-badge.pub { color: var(--blue); border: 1px solid #6ec1ff44; background: #6ec1ff12; }
+
+.app-acct-amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.app-acct-sub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.app-acct-sub .yg { color: var(--accent); }
+.app-acct-sub .yb { color: var(--blue); }
+.app-acct-sub .ya { color: var(--amber); }
+
+.app-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fade-up 0.5s 0.55s forwards;
+}
+
+.app-section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.app-section-filter {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.app-tx-list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fade-up 0.5s 0.6s forwards;
+}
+
+.app-tx-date-group {
+  padding: 12px 20px 8px;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-tx-item {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.app-tx-item:last-child { border-bottom: none; }
+.app-tx-item:hover { background: var(--surface-2); }
+
+.app-tx-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border: 1px solid var(--border);
+}
+
+.app-tx-info { display: flex; flex-direction: column; gap: 2px; }
+
+.app-tx-name { font-size: 13px; font-weight: 500; }
+
+.app-tx-detail { font-size: 11px; color: var(--text-muted); }
+
+.app-tx-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-tx-amt { font-size: 13px; font-weight: 500; }
+.app-tx-amt.neg { color: var(--text); }
+.app-tx-amt.pos { color: var(--accent); }
+
+.app-tx-chain-tag {
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.app-tx-chain-tag.priv { color: var(--accent); }
+.app-tx-chain-tag.pub { color: var(--blue); }
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+  .flow-grid { grid-template-columns: 1fr; }
+  .arch-layers { grid-template-columns: 1fr; }
+  .arch-bridge { flex-direction: row; padding: 16px 0; }
+  .bridge-line { width: 40px; height: 2px; }
+  .revenue-grid { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .tx-row { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tx-chain, .tx-time { display: none; }
+  nav { gap: 16px; }
+  nav a:not(.nav-cta) { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <div class="logo">
+      <span class="logo-dot"></span>
+      Unified
+    </div>
+    <nav>
+      <a href="#how">How It Works</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#revenue">Revenue</a>
+      <a href="#transactions">Live Feed</a>
+      <a href="#" class="nav-cta">Launch App</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-label">Built on Rayls Privacy Node</div>
+        <h1>One account.<br>Every <em>function.</em></h1>
+        <p class="hero-sub">
+          Checking. Savings. Brokerage. Fractional shares. No walls between them.
+          Private payments on Rayls — DeFi yield under the hood. Free for users. Always.
+        </p>
+      </div>
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <span class="demo-card-title">Your Unified Account</span>
+          <span class="demo-card-status">Private</span>
+        </div>
+        <div class="balance-section">
+          <div class="balance-label">Total Balance</div>
+          <div class="balance-amount" id="totalBalance">$47,231<span class="cents">.84</span></div>
+          <div class="balance-change">+$312.40 yield earned this month</div>
+        </div>
+        <div class="account-rows">
+          <div class="account-row">
+            <div class="row-icon checking">$</div>
+            <div class="row-info">
+              <span class="row-name">Spending</span>
+              <span class="row-desc">Instant private payments</span>
+            </div>
+            <div>
+              <div class="row-amount">$3,420.50</div>
+              <div class="row-yield">via Rayls Privacy Node</div>
+            </div>
+          </div>
+          <div class="account-row">
+            <div class="row-icon savings">↑</div>
+            <div class="row-info">
+              <span class="row-name">Reserve</span>
+              <span class="row-desc">Auto-deployed to DeFi lending</span>
+            </div>
+            <div>
+              <div class="row-amount">$18,600.00</div>
+              <div class="row-yield" style="color:var(--blue)">4.2% APY</div>
+            </div>
+          </div>
+          <div class="account-row">
+            <div class="row-icon invest">◆</div>
+            <div class="row-info">
+              <span class="row-name">Invest</span>
+              <span class="row-desc">Fractional shares · any amount</span>
+            </div>
+            <div>
+              <div class="row-amount">$25,211.34</div>
+              <div class="row-yield" style="color:var(--amber)">+8.3% all time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div class="section-label">How It Works</div>
+    <h2 class="section-title">Your money stops sitting in silos.</h2>
+    <div class="flow-grid">
+      <div class="flow-card">
+        <div class="flow-number">01</div>
+        <div class="flow-heading">Deposit Once</div>
+        <p class="flow-desc">
+          Funds land in your Unified account on the Rayls Privacy Node. One balance. No routing decisions. No minimum balances across three apps.
+        </p>
+        <span class="flow-tag private">Privacy Node</span>
+      </div>
+      <div class="flow-card">
+        <div class="flow-number">02</div>
+        <div class="flow-heading">AI Allocates</div>
+        <p class="flow-desc">
+          An on-chain AI agent continuously optimizes: spending buffer stays liquid, excess capital auto-deploys to DeFi lending on the Rayls Public L1, investments rebalance.
+        </p>
+        <span class="flow-tag private">Privacy Node</span>
+        <span class="flow-tag public" style="margin-left:6px">Public L1</span>
+      </div>
+      <div class="flow-card">
+        <div class="flow-number">03</div>
+        <div class="flow-heading">Earn Passively</div>
+        <p class="flow-desc">
+          Lending yield and LP returns flow back to your account. No fees, no subscriptions. The platform keeps a spread on DeFi returns — that's the entire business model.
+        </p>
+        <span class="flow-tag public">Public L1</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="arch-section" id="architecture">
+  <div class="container">
+    <div class="section-label">Architecture</div>
+    <h2 class="section-title">Two chains. One seamless experience.</h2>
+    <div class="arch-diagram">
+      <div class="arch-layers">
+        <div class="arch-layer">
+          <div class="arch-layer-title private-t">
+            <span style="width:6px;height:6px;background:var(--accent);border-radius:50%;display:inline-block"></span>
+            Rayls Privacy Node
+          </div>
+          <div class="arch-item">
+            <span class="label">Identity</span>
+            KYC credentials · private account state
+          </div>
+          <div class="arch-item">
+            <span class="label">Payments</span>
+            Private transfers · sub-second finality
+          </div>
+          <div class="arch-item">
+            <span class="label">Portfolio</span>
+            Fractional positions · full metadata
+          </div>
+          <div class="arch-item">
+            <span class="label">AI Agent</span>
+            Allocation engine · compliance attestation
+          </div>
+        </div>
+        <div class="arch-bridge">
+          <div class="bridge-line"></div>
+          <div class="bridge-dot"></div>
+          <div class="bridge-line"></div>
+          <div class="bridge-dot"></div>
+          <div class="bridge-line"></div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-title public-t">
+            <span style="width:6px;height:6px;background:var(--blue);border-radius:50%;display:inline-block"></span>
+            Rayls Public L1
+          </div>
+          <div class="arch-item">
+            <span class="label">DeFi Lending</span>
+            Supply idle capital · earn variable APY
+          </div>
+          <div class="arch-item">
+            <span class="label">Liquidity Pools</span>
+            LP positions for tokenized assets
+          </div>
+          <div class="arch-item">
+            <span class="label">Marketplace</span>
+            Public fractional share trading
+          </div>
+          <div class="arch-item">
+            <span class="label">Attestation</span>
+            AI-signed proofs of private holdings
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVENUE -->
+<section class="revenue-section" id="revenue">
+  <div class="container">
+    <div class="section-label">Revenue Model</div>
+    <h2 class="section-title">Free for users. Profitable from day one.</h2>
+    <div class="revenue-grid">
+      <div class="revenue-left">
+        <div class="revenue-headline">
+          We don't charge users. We put their idle money to work — and keep the spread.
+        </div>
+        <p class="revenue-body">
+          Every dollar sitting in your Reserve isn't sitting. It's deployed to DeFi lending protocols on the Rayls Public L1. Users see 4% APY. The protocol earns 6-8%. The spread is ours. No subscription. No trading fees. No hidden costs. Just yield-backed revenue that scales with deposits.
+        </p>
+        <div class="revenue-stat-grid">
+          <div class="stat-box">
+            <div class="stat-value">$0</div>
+            <div class="stat-label">User Fees</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value">2-4%</div>
+            <div class="stat-label">Yield Spread</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value">&lt;1s</div>
+            <div class="stat-label">Finality</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value">∞</div>
+            <div class="stat-label">Fractional</div>
+          </div>
+        </div>
+      </div>
+      <div class="revenue-visual">
+        <div class="rv-header">Yield Breakdown · Current</div>
+        <div class="rv-body">
+          <div class="yield-bar">
+            <span class="yield-label">Lending</span>
+            <div class="yield-track">
+              <div class="yield-fill lending" style="width: 0%" data-target="72%">5.8% APY</div>
+            </div>
+          </div>
+          <div class="yield-bar">
+            <span class="yield-label">LP Rewards</span>
+            <div class="yield-track">
+              <div class="yield-fill lp" style="width: 0%" data-target="45%">3.2% APY</div>
+            </div>
+          </div>
+          <div class="yield-bar">
+            <span class="yield-label">Our Spread</span>
+            <div class="yield-track">
+              <div class="yield-fill spread" style="width: 0%" data-target="35%">2.6% net</div>
+            </div>
+          </div>
+        </div>
+        <div class="rv-footer">
+          <div>
+            <span class="label">User sees: </span>
+            <span class="value">4.2% APY</span>
+          </div>
+          <div>
+            <span class="label">Protocol earns: </span>
+            <span class="value">2.6% spread</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TX FEED -->
+<section class="tx-section" id="transactions">
+  <div class="container">
+    <div class="section-label">Live Feed</div>
+    <h2 class="section-title">Every transaction. Both chains.</h2>
+    <div class="tx-feed">
+      <div class="tx-header">
+        <span class="tx-header-left">Transaction Stream</span>
+        <span class="tx-live-badge">Simulated Live</span>
+      </div>
+      <div id="txBody"></div>
+    </div>
+  </div>
+</section>
+
+<!-- APP OVERLAY -->
+<div class="app-overlay" id="appOverlay">
+  <div class="app-topbar">
+    <div class="logo" style="cursor:pointer" onclick="closeApp()">
+      <span class="logo-dot"></span>
+      Unified
+    </div>
+    <button class="app-close" id="appClose">✕</button>
+  </div>
+  <div class="app-body" id="appBody">
+    <!-- dynamically populated -->
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom:0;">
+          <span class="logo-dot"></span>
+          Unified
+        </div>
+        <p class="footer-about">
+          One account for everything. No walls between checking, savings, and investing.
+          Built on Rayls' privacy-first blockchain infrastructure.
+        </p>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Product</div>
+        <a href="#">Spending</a>
+        <a href="#">Reserve & Yield</a>
+        <a href="#">Fractional Investing</a>
+        <a href="#">AI Allocation</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Developers</div>
+        <a href="#">Documentation</a>
+        <a href="#">GitHub</a>
+        <a href="#">Rayls Litepaper</a>
+        <a href="#">API Reference</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Unified. Hackathon demo — EthCC Cannes.</span>
+      <span class="built-on">Built on <span class="rayls-badge">Rayls</span></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// === YIELD BAR ANIMATION ===
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.yield-fill').forEach(bar => {
+        bar.style.width = bar.dataset.target;
+      });
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.rv-body').forEach(el => observer.observe(el));
+
+// === LIVE TX FEED ===
+const txTypes = [
+  { type: 'Send', class: 'send', amounts: ['-$42.00', '-$18.50', '-$127.30', '-$9.99', '-$250.00', '-$34.20'], chain: 'Privacy', chainClass: 'priv', descs: ['Coffee → 0x7a3...f21', 'Lunch → 0x91c...b08', 'Rent split → 0xd2e...a44', 'Subscription → 0xb33...e91', 'Utilities → 0x5f1...c72', 'Groceries → 0x8a4...d33'] },
+  { type: 'Receive', class: 'receive', amounts: ['+$3,200.00', '+$500.00', '+$85.00', '+$1,750.00'], chain: 'Privacy', chainClass: 'priv', descs: ['Payroll ← 0xc19...a55', 'Freelance ← 0x4e2...b17', 'Refund ← 0x6d8...f93', 'Transfer ← 0xf72...e01'] },
+  { type: 'Lend', class: 'lend', amounts: ['+$12.40', '+$8.73', '+$22.10', '+$5.60', '+$31.25'], chain: 'Public', chainClass: 'pub', descs: ['Yield → Aave v3 pool', 'Yield → Compound fork', 'LP fee → wETH/USDC', 'Yield → Lending pool', 'LP fee → RLS/USDC'] },
+  { type: 'Invest', class: 'invest', amounts: ['+0.34 AAPL', '+0.12 NVDA', '+0.05 MSFT', '+1.2 QQQ', '+0.08 TSLA'], chain: 'Public', chainClass: 'pub', descs: ['Auto-buy → fractional', 'Rebalance → AI agent', 'DCA trigger → weekly', 'Allocation → tech ETF', 'Rebalance → AI agent'] }
+];
+
+const txBody = document.getElementById('txBody');
+let txCount = 0;
+
+function addTx() {
+  const group = txTypes[Math.floor(Math.random() * txTypes.length)];
+  const idx = Math.floor(Math.random() * group.amounts.length);
+  const now = new Date();
+  const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+
+  const row = document.createElement('div');
+  row.className = 'tx-row';
+  row.innerHTML = `
+    <span class="tx-time">${time}</span>
+    <span class="tx-type ${group.class}">${group.type}</span>
+    <span class="tx-amount">${group.amounts[idx]}</span>
+    <span class="tx-chain ${group.chainClass}">${group.chain}</span>
+    <span class="tx-status">✓</span>
+  `;
+
+  if (txBody.firstChild) {
+    txBody.insertBefore(row, txBody.firstChild);
+  } else {
+    txBody.appendChild(row);
+  }
+
+  txCount++;
+  if (txCount > 12) {
+    txBody.removeChild(txBody.lastChild);
+  }
+}
+
+for (let i = 0; i < 6; i++) addTx();
+setInterval(addTx, 2800);
+
+// === SMOOTH SCROLL ===
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const href = a.getAttribute('href');
+    if (href === '#') return;
+    e.preventDefault();
+    const target = document.querySelector(href);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// === APP OVERLAY ===
+const appOverlay = document.getElementById('appOverlay');
+const appBody = document.getElementById('appBody');
+const appClose = document.getElementById('appClose');
+
+function formatDate(d) {
+  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+}
+
+function daysAgo(n) {
+  const d = new Date();
+  d.setDate(d.getDate() - n);
+  return d;
+}
+
+const spendingHistory = [
+  { date: 0, icon: '☕', cat: 'i-food',     name: 'Café de la Bourse',       detail: 'Coffee & pastry',                amt: '-$8.40',    chain: 'priv', pos: false },
+  { date: 0, icon: '⚡', cat: 'i-yield',    name: 'Aave v3 Yield',           detail: 'Lending interest accrued',        amt: '+$4.12',    chain: 'pub',  pos: true },
+  { date: 0, icon: '🚇', cat: 'i-transport',name: 'RTM Metro',              detail: 'Transit pass reload',             amt: '-$32.00',   chain: 'priv', pos: false },
+  { date: 1, icon: '🛒', cat: 'i-shopping', name: 'Carrefour City',          detail: 'Groceries',                       amt: '-$67.23',   chain: 'priv', pos: false },
+  { date: 1, icon: '◆',  cat: 'i-invest',   name: 'Auto-Invest: NVDA',       detail: '0.12 shares · AI rebalance',      amt: '-$14.28',   chain: 'pub',  pos: false },
+  { date: 1, icon: '⚡', cat: 'i-yield',    name: 'LP Fees: wETH/USDC',      detail: 'Liquidity pool return',           amt: '+$8.73',    chain: 'pub',  pos: true },
+  { date: 1, icon: '🏠', cat: 'i-housing',  name: 'Rent Split',              detail: 'Shared housing · 0xd2e...a44',    amt: '-$625.00',  chain: 'priv', pos: false },
+  { date: 2, icon: '📱', cat: 'i-sub',      name: 'iCloud+',                 detail: 'Monthly subscription',            amt: '-$2.99',    chain: 'priv', pos: false },
+  { date: 2, icon: '☕', cat: 'i-food',     name: 'La Caravelle',            detail: 'Lunch',                           amt: '-$18.50',   chain: 'priv', pos: false },
+  { date: 2, icon: '◆',  cat: 'i-invest',   name: 'Auto-Invest: QQQ',        detail: '1.2 shares · DCA weekly',         amt: '-$312.60',  chain: 'pub',  pos: false },
+  { date: 2, icon: '💰', cat: 'i-income',   name: 'Payroll',                 detail: 'Employer direct deposit',         amt: '+$3,200.00',chain: 'priv', pos: true },
+  { date: 3, icon: '⚡', cat: 'i-yield',    name: 'Compound Fork Yield',     detail: 'Lending interest accrued',        amt: '+$5.60',    chain: 'pub',  pos: true },
+  { date: 3, icon: '🛒', cat: 'i-shopping', name: 'Amazon',                  detail: 'USB-C adapter',                   amt: '-$12.99',   chain: 'priv', pos: false },
+  { date: 4, icon: '🍷', cat: 'i-food',     name: 'Le Petit Nice',           detail: 'Dinner · split 2 ways',           amt: '-$47.50',   chain: 'priv', pos: false },
+  { date: 4, icon: '⚡', cat: 'i-yield',    name: 'LP Fees: RLS/USDC',       detail: 'Liquidity pool return',           amt: '+$31.25',   chain: 'pub',  pos: true },
+  { date: 5, icon: '🚇', cat: 'i-transport',name: 'Uber',                    detail: 'Ride to Vieux-Port',              amt: '-$11.20',   chain: 'priv', pos: false },
+  { date: 5, icon: '📱', cat: 'i-sub',      name: 'Spotify',                 detail: 'Monthly subscription',            amt: '-$10.99',   chain: 'priv', pos: false },
+  { date: 5, icon: '💰', cat: 'i-income',   name: 'Freelance Payment',       detail: 'From 0x4e2...b17',                amt: '+$500.00',  chain: 'priv', pos: true },
+  { date: 6, icon: '☕', cat: 'i-food',     name: 'Starbucks Reserve',       detail: 'Coffee',                          amt: '-$6.80',    chain: 'priv', pos: false },
+  { date: 6, icon: '◆',  cat: 'i-invest',   name: 'Auto-Invest: AAPL',       detail: '0.34 shares · AI rebalance',      amt: '-$73.44',   chain: 'pub',  pos: false },
+];
+
+function renderApp() {
+  // group by date
+  const groups = {};
+  spendingHistory.forEach(tx => {
+    const key = tx.date;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(tx);
+  });
+
+  let txHtml = '';
+  Object.keys(groups).sort((a,b) => a - b).forEach(dayOffset => {
+    const d = daysAgo(parseInt(dayOffset));
+    const label = parseInt(dayOffset) === 0 ? 'Today' : parseInt(dayOffset) === 1 ? 'Yesterday' : formatDate(d);
+    txHtml += `<div class="app-tx-date-group">${label}</div>`;
+    groups[dayOffset].forEach(tx => {
+      txHtml += `
+        <div class="app-tx-item">
+          <div class="app-tx-icon ${tx.cat}">${tx.icon}</div>
+          <div class="app-tx-info">
+            <span class="app-tx-name">${tx.name}</span>
+            <span class="app-tx-detail">${tx.detail}</span>
+          </div>
+          <div class="app-tx-right">
+            <span class="app-tx-amt ${tx.pos ? 'pos' : 'neg'}">${tx.amt}</span>
+            <span class="app-tx-chain-tag ${tx.chain}">${tx.chain === 'priv' ? 'Privacy' : 'Public'}</span>
+          </div>
+        </div>`;
+    });
+  });
+
+  appBody.innerHTML = `
+    <div class="app-greeting">March 28, 2026</div>
+    <h2 class="app-welcome">Good evening.</h2>
+
+    <div class="app-balance-card">
+      <div class="app-bal-label">Unified Balance</div>
+      <div class="app-bal-amount">$47,231<span class="cents">.84</span></div>
+      <div class="app-bal-meta">
+        <div class="app-bal-meta-item">
+          <span class="dot" style="background:var(--accent)"></span>
+          <span class="val">+$312.40</span>
+          <span class="lbl">yield this month</span>
+        </div>
+        <div class="app-bal-meta-item">
+          <span class="dot" style="background:var(--blue)"></span>
+          <span class="val">-$1,244.32</span>
+          <span class="lbl">spent this month</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-actions">
+      <button class="app-action-btn">
+        <div class="app-action-icon a-send">↑</div>
+        <span class="app-action-label">Send</span>
+      </button>
+      <button class="app-action-btn">
+        <div class="app-action-icon a-receive">↓</div>
+        <span class="app-action-label">Receive</span>
+      </button>
+      <button class="app-action-btn">
+        <div class="app-action-icon a-invest">◆</div>
+        <span class="app-action-label">Invest</span>
+      </button>
+      <button class="app-action-btn">
+        <div class="app-action-icon a-swap">⇄</div>
+        <span class="app-action-label">Bridge</span>
+      </button>
+    </div>
+
+    <div class="app-accounts-strip">
+      <div class="app-acct-card">
+        <div class="app-acct-top">
+          <span class="app-acct-name">Spending</span>
+          <span class="app-acct-badge priv">Private</span>
+        </div>
+        <div class="app-acct-amount">$3,420.50</div>
+        <div class="app-acct-sub">Instant payments · <span class="yg">sub-second</span></div>
+      </div>
+      <div class="app-acct-card">
+        <div class="app-acct-top">
+          <span class="app-acct-name">Reserve</span>
+          <span class="app-acct-badge pub">Public L1</span>
+        </div>
+        <div class="app-acct-amount">$18,600.00</div>
+        <div class="app-acct-sub">DeFi lending · <span class="yb">4.2% APY</span></div>
+      </div>
+      <div class="app-acct-card">
+        <div class="app-acct-top">
+          <span class="app-acct-name">Invest</span>
+          <span class="app-acct-badge pub">Public L1</span>
+        </div>
+        <div class="app-acct-amount">$25,211.34</div>
+        <div class="app-acct-sub">Fractional shares · <span class="ya">+8.3%</span></div>
+      </div>
+    </div>
+
+    <div class="app-section-header">
+      <span class="app-section-title">Recent Activity</span>
+      <span class="app-section-filter">All Chains ▾</span>
+    </div>
+    <div class="app-tx-list">
+      ${txHtml}
+    </div>
+  `;
+}
+
+function openApp(e) {
+  if (e) e.preventDefault();
+  renderApp();
+  appOverlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeApp() {
+  appOverlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// bind Launch App button
+document.querySelectorAll('.nav-cta').forEach(btn => {
+  btn.addEventListener('click', openApp);
+});
+
+appClose.addEventListener('click', closeApp);
+
+// ESC to close
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && appOverlay.classList.contains('open')) closeApp();
+});
+</script>
+
+</body>
+</html>
