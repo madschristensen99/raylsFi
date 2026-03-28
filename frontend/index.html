@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rayls.Fi — Institutional-Grade DeFi Infrastructure</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@latest/dist/modal.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@web3auth/base@latest/dist/base.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@web3auth/ethereum-provider@latest/dist/ethereumProvider.umd.min.js"></script>
+<script src="auth-web3auth.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1386,7 +1391,7 @@ footer {
       <a href="#architecture">Architecture</a>
       <a href="#revenue">Revenue</a>
       <a href="#transactions">Live Feed</a>
-      <a href="#" class="nav-cta">Launch App</a>
+      <button id="authButton" class="nav-cta" style="background:none;border:none;cursor:pointer;font-family:inherit;font-size:inherit;padding:8px 20px;">Sign In</button>
     </nav>
   </div>
 </header>
@@ -1840,8 +1845,9 @@ function renderApp() {
   });
 
   appBody.innerHTML = `
-    <div class="app-greeting">March 28, 2026</div>
-    <h2 class="app-welcome">Good evening.</h2>
+    <div class="app-greeting">${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+    <h2 class="app-welcome">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}.</h2>
+    ${window.raylsAuth && window.raylsAuth.wallet ? `<div style="font-size:12px;color:var(--text-muted);margin-top:-32px;margin-bottom:24px;">Connected: ${window.raylsAuth.wallet.slice(0,8)}...${window.raylsAuth.wallet.slice(-6)}</div>` : ''}
 
     <div class="app-balance-card">
       <div class="app-bal-label">Total Treasury Value</div>
@@ -1928,9 +1934,15 @@ function closeApp() {
   document.body.style.overflow = '';
 }
 
-// bind Launch App button
-document.querySelectorAll('.nav-cta').forEach(btn => {
-  btn.addEventListener('click', openApp);
+// Listen for auth changes from Privy
+window.addEventListener('raylsfi-auth-change', (e) => {
+  console.log('Auth state changed:', e.detail);
+  if (e.detail.isAuthenticated) {
+    console.log('User authenticated:', e.detail.user);
+    console.log('Embedded wallet:', e.detail.wallet);
+    // Auto-open app after successful login
+    setTimeout(() => openApp(), 500);
+  }
 });
 
 appClose.addEventListener('click', closeApp);
