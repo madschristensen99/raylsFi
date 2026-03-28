@@ -1990,12 +1990,12 @@ agentFab.addEventListener('click', () => {
 });
 
 function initAgent() {
-  addAgentMsg('ai', `I'm your Rayls.Fi treasury agent. I have access to your complete financial state: account balances, transaction history, yield positions, and allocation strategy.\n\nI can provide portfolio analysis, optimize capital allocation, project returns, and answer questions about your financial position.`);
+  addAgentMsg('ai', `I'm your personal financial planner. I understand your complete financial picture across all platforms through OpenClaw integration — spending patterns, income, budgets, and goals.\n\nI can help you set budgets, track spending, plan for goals, and make smarter financial decisions. Your data stays private and encrypted.`);
   showSuggestions([
-    'Where am I spending most?',
-    'How can I earn more yield?',
-    'Am I on track this month?',
-    'Optimize my allocation'
+    'Help me set a budget',
+    'Where am I overspending?',
+    'Plan a savings goal',
+    'Review my spending habits'
   ]);
 }
 
@@ -2036,36 +2036,41 @@ function showSuggestions(items) {
   });
 }
 
-// Simulated agent responses based on user's financial data
+// Financial planner responses with budget management and cross-platform insights
 const agentResponses = {
-  'spending': {
-    text: `Looking at your last 7 days:\n\n<b>Food & Drink:</b> $80.70 (3 transactions)\n<b>Housing:</b> $625.00 (rent split)\n<b>Transport:</b> $43.20\n<b>Subscriptions:</b> $13.98\n<b>Shopping:</b> $12.99\n\nFood is your biggest discretionary spend at ~$11.53/day. That's reasonable but could drop if you meal-prepped 2 days a week — saves roughly $120/month which would compound at 4.2% on the reserve.`,
-    followups: ['Set a food budget', 'What about last month?', 'How much is going to subs?']
+  'budget': {
+    text: `Let's set up your budget. Based on your spending patterns across all platforms:\n\n<b>Current monthly spending:</b>\n• Food & Dining: $340/mo\n• Housing: $625/mo\n• Transport: $180/mo\n• Subscriptions: $56/mo\n• Shopping & Other: $220/mo\n\n<b>Total:</b> $1,421/mo\n\nI recommend the 50/30/20 rule: 50% needs, 30% wants, 20% savings. Based on your income, that's:\n\n• Needs: $1,850/mo\n• Wants: $1,110/mo\n• Savings: $740/mo\n\nShould I set these as your budget targets?`,
+    followups: ['Yes, set these budgets', 'Customize the amounts', 'Show me where I can cut back']
   },
-  'yield': {
-    text: `Your current yield setup:\n\n<b>Reserve:</b> $18,600 → Aave v3 lending at <span style="color:var(--accent)">4.2% APY</span>\n<b>LP position:</b> wETH/USDC pool earning <span style="color:var(--blue)">~3.2% in fees</span>\n\nYou have $3,420 in Spending that's earning nothing. I'd recommend keeping $1,500 as a spending buffer and moving $1,920 to the Reserve. That's an extra ~$80/year in yield.\n\nWant me to submit that reallocation?`,
-    followups: ['Yes, reallocate', 'Show me riskier options', 'What about LP risks?']
+  'spending': {
+    text: `Analyzing your spending across all connected accounts:\n\n<b>Last 30 days breakdown:</b>\n• Food & Dining: $340 (24% of total)\n• Housing: $625 (44%)\n• Transport: $180 (13%)\n• Subscriptions: $56 (4%)\n• Shopping: $220 (15%)\n\n<b>⚠️ You're over budget on:</b>\n• Food & Dining: $90 over ($250 budget)\n• Shopping: $70 over ($150 budget)\n\nTip: You spent $85 on food delivery this month. Cooking 3 more meals at home could save ~$60/mo.`,
+    followups: ['Set a food budget', 'Cancel unused subscriptions', 'See my spending trends']
+  },
+  'goals': {
+    text: `Let's plan your financial goals. What are you saving for?\n\nCommon goals:\n\n<b>Emergency Fund:</b> 6 months expenses = $8,526\n<b>Down Payment:</b> 20% on $400k home = $80,000\n<b>Vacation:</b> Europe trip = $4,500\n<b>Retirement:</b> $1M by age 65\n\nBased on your current savings rate ($740/mo), you could:\n• Build emergency fund in 11 months\n• Save for vacation in 6 months\n• Hit down payment in 9 years\n\nWhich goal should we prioritize?`,
+    followups: ['Emergency fund first', 'Plan for down payment', 'Multiple goals']
   },
   'track': {
-    text: `March recap so far:\n\n<b>Income:</b> +$3,700.00\n<b>Spending:</b> -$1,244.32\n<b>Yield earned:</b> +$312.40\n<b>Net:</b> <span style="color:var(--accent)">+$2,768.08</span>\n\nYou're saving 74.8% of income this month — well above the 20% baseline. Your yield is covering 25% of your spending. At this rate, passive income covers all spending within ~18 months.`,
-    followups: ['Project end of year', 'Compare to last month', 'Set a savings goal']
+    text: `March financial summary (cross-platform):\n\n<b>Income:</b> +$3,700.00\n<b>Spending:</b> -$1,421.00\n<b>Savings:</b> +$2,279.00 (61.6%)\n\n<b>Budget performance:</b>\n✅ Under budget: Housing, Transport\n⚠️ Over budget: Food (+$90), Shopping (+$70)\n\n<b>Savings goal progress:</b>\nEmergency fund: $4,200 / $8,526 (49%)\n\nYou're on track! Keep this up and you'll hit your emergency fund goal by August.`,
+    followups: ['Adjust my budgets', 'See spending by category', 'Project end of year']
   },
   'optimize': {
-    text: `Current allocation:\n\n<b>Spending (Privacy Node):</b> 7.2% — $3,420\n<b>Reserve / Lending (Public L1):</b> 39.4% — $18,600\n<b>Investments (Public L1):</b> 53.4% — $25,211\n\nRecommendation: Your spending buffer is ~2.7x your weekly burn rate. That's conservative. I'd trim to 1.5x ($1,900) and move the delta to Reserve for guaranteed yield.\n\nInvestment-side: your 100% equity allocation is aggressive. Consider moving 10% to a stablecoin LP for lower-vol yield.`,
-    followups: ['Apply conservative plan', 'Keep it aggressive', 'Show me the numbers']
+    text: `Financial health check:\n\n<b>Strengths:</b>\n✅ Savings rate: 61.6% (excellent)\n✅ No high-interest debt\n✅ Building emergency fund\n\n<b>Opportunities:</b>\n⚠️ $3,420 in checking earning 0% — move to high-yield savings (4.5% APY) for +$154/year\n⚠️ Food spending 36% over budget\n⚠️ 3 unused subscriptions costing $28/mo\n\n<b>Quick wins:</b>\n1. Cancel unused subs → save $336/year\n2. Move excess cash to savings → earn $154/year\n3. Meal prep 3x/week → save $720/year\n\nTotal potential: <span style="color:var(--accent)">+$1,210/year</span>`,
+    followups: ['Show me the subscriptions', 'Set up auto-transfer', 'Create meal budget']
   },
   'default': {
-    text: `I can help with that. Here's what I have access to:\n\n• Your full spending history (private, on-chain)\n• Real-time yield rates across DeFi positions\n• Your allocation split and investment positions\n• Budgeting projections and rebalancing\n\nWhat would you like to dig into?`,
-    followups: ['Where am I spending most?', 'Optimize my allocation', 'Am I on track this month?']
+    text: `I'm your financial planner with access to your complete financial picture through OpenClaw integration.\n\nI can help you:\n\n• Set and track budgets across all accounts\n• Identify overspending and savings opportunities\n• Plan for financial goals (emergency fund, down payment, etc.)\n• Optimize your money (high-yield savings, cutting waste)\n• Understand your spending patterns\n\nAll your data is encrypted and stays private. What would you like help with?`,
+    followups: ['Help me set a budget', 'Where am I overspending?', 'Plan a savings goal']
   }
 };
 
 function matchResponse(input) {
   const lower = input.toLowerCase();
-  if (lower.includes('spend') || lower.includes('food') || lower.includes('where') || lower.includes('budget') || lower.includes('most')) return agentResponses.spending;
-  if (lower.includes('yield') || lower.includes('earn') || lower.includes('apy') || lower.includes('interest') || lower.includes('more')) return agentResponses.yield;
-  if (lower.includes('track') || lower.includes('month') || lower.includes('saving') || lower.includes('recap') || lower.includes('net')) return agentResponses.track;
-  if (lower.includes('optim') || lower.includes('allocat') || lower.includes('rebalance') || lower.includes('split') || lower.includes('reallocat')) return agentResponses.optimize;
+  if (lower.includes('budget') || lower.includes('set') || lower.includes('50/30/20') || lower.includes('target')) return agentResponses.budget;
+  if (lower.includes('spend') || lower.includes('food') || lower.includes('where') || lower.includes('over') || lower.includes('most')) return agentResponses.spending;
+  if (lower.includes('goal') || lower.includes('save') || lower.includes('plan') || lower.includes('emergency') || lower.includes('down payment') || lower.includes('vacation')) return agentResponses.goals;
+  if (lower.includes('track') || lower.includes('month') || lower.includes('summary') || lower.includes('recap') || lower.includes('progress')) return agentResponses.track;
+  if (lower.includes('optim') || lower.includes('health') || lower.includes('improve') || lower.includes('opportunity') || lower.includes('advice')) return agentResponses.optimize;
   return agentResponses.default;
 }
 
