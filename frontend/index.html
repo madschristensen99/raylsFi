@@ -1781,6 +1781,25 @@ const appOverlay = document.getElementById('appOverlay');
 const appBody = document.getElementById('appBody');
 const appClose = document.getElementById('appClose');
 
+// Unit of account toggle (SPY or USD)
+let unitOfAccount = 'SPY'; // 'SPY' or 'USD'
+const SPY_PRICE = 587.42; // Current SPY price
+const TOTAL_USD = 47231.84;
+const TOTAL_SPY_SHARES = (TOTAL_USD / SPY_PRICE).toFixed(4);
+
+function toggleUnit() {
+  unitOfAccount = unitOfAccount === 'SPY' ? 'USD' : 'SPY';
+  renderApp();
+}
+
+function formatAmount(usd) {
+  if (unitOfAccount === 'SPY') {
+    const shares = (usd / SPY_PRICE).toFixed(4);
+    return `${shares} SPY`;
+  }
+  return `$${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
 function formatDate(d) {
   return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 }
@@ -1850,20 +1869,24 @@ function renderApp() {
     ${window.raylsAuth && window.raylsAuth.wallet ? `<div style="font-size:12px;color:var(--text-muted);margin-top:-32px;margin-bottom:24px;">Connected: ${window.raylsAuth.wallet.slice(0,8)}...${window.raylsAuth.wallet.slice(-6)}</div>` : ''}
 
     <div class="app-balance-card">
-      <div class="app-bal-label">Total Treasury Value</div>
-      <div class="app-bal-amount">$47,231<span class="cents">.84</span></div>
+      <div class="app-bal-label" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Total Account Value</span>
+        <button onclick="toggleUnit()" style="background:rgba(110,255,158,0.1);border:1px solid rgba(110,255,158,0.3);color:var(--accent);padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;">${unitOfAccount === 'SPY' ? 'SPY' : 'USD'}</button>
+      </div>
+      <div class="app-bal-amount">${unitOfAccount === 'SPY' ? `${TOTAL_SPY_SHARES}<span class="cents" style="font-size:0.5em;margin-left:8px;color:var(--text-muted);">SPY</span>` : `$47,231<span class="cents">.84</span>`}</div>
       <div class="app-bal-meta">
         <div class="app-bal-meta-item">
           <span class="dot" style="background:var(--accent)"></span>
-          <span class="val">+$312.40</span>
+          <span class="val">${unitOfAccount === 'SPY' ? `+${(312.40 / SPY_PRICE).toFixed(4)} SPY` : '+$312.40'}</span>
           <span class="lbl">yield this month</span>
         </div>
         <div class="app-bal-meta-item">
           <span class="dot" style="background:var(--blue)"></span>
-          <span class="val">-$1,244.32</span>
+          <span class="val">${unitOfAccount === 'SPY' ? `-${(1244.32 / SPY_PRICE).toFixed(4)} SPY` : '-$1,244.32'}</span>
           <span class="lbl">spent this month</span>
         </div>
       </div>
+      ${unitOfAccount === 'SPY' ? `<div style="font-size:11px;color:var(--text-muted);margin-top:12px;text-align:center;">≈ $${TOTAL_USD.toLocaleString('en-US', { minimumFractionDigits: 2 })} USD @ $${SPY_PRICE}/share</div>` : `<div style="font-size:11px;color:var(--text-muted);margin-top:12px;text-align:center;">≈ ${TOTAL_SPY_SHARES} SPY shares @ $${SPY_PRICE}/share</div>`}
     </div>
 
     <div class="app-actions">
@@ -1877,39 +1900,14 @@ function renderApp() {
       </button>
       <button class="app-action-btn">
         <div class="app-action-icon a-invest">◆</div>
-        <span class="app-action-label">Invest</span>
-      </button>
-      <button class="app-action-btn">
-        <div class="app-action-icon a-swap">⇄</div>
-        <span class="app-action-label">Bridge</span>
+        <span class="app-action-label">Auto-Invest</span>
       </button>
     </div>
 
-    <div class="app-accounts-strip">
-      <div class="app-acct-card">
-        <div class="app-acct-top">
-          <span class="app-acct-name">Spending</span>
-          <span class="app-acct-badge priv">Private</span>
-        </div>
-        <div class="app-acct-amount">$3,420.50</div>
-        <div class="app-acct-sub">Instant payments · <span class="yg">sub-second</span></div>
-      </div>
-      <div class="app-acct-card">
-        <div class="app-acct-top">
-          <span class="app-acct-name">Reserve</span>
-          <span class="app-acct-badge pub">Public L1</span>
-        </div>
-        <div class="app-acct-amount">$18,600.00</div>
-        <div class="app-acct-sub">DeFi lending · <span class="yb">4.2% APY</span></div>
-      </div>
-      <div class="app-acct-card">
-        <div class="app-acct-top">
-          <span class="app-acct-name">Invest</span>
-          <span class="app-acct-badge pub">Public L1</span>
-        </div>
-        <div class="app-acct-amount">$25,211.34</div>
-        <div class="app-acct-sub">Fractional shares · <span class="ya">+8.3%</span></div>
-      </div>
+    <div style="margin:24px 0;padding:16px;background:rgba(110,255,158,0.05);border:1px solid rgba(110,255,158,0.2);border-radius:12px;">
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">Auto-invested in SPY</div>
+      <div style="font-size:20px;font-weight:600;color:var(--accent);margin-bottom:4px;">${unitOfAccount === 'SPY' ? `${TOTAL_SPY_SHARES} shares` : `$${TOTAL_USD.toLocaleString('en-US', { minimumFractionDigits: 2 })}`}</div>
+      <div style="font-size:12px;color:var(--text-muted);">Everything auto-invested · <span style="color:var(--accent);">+8.3% YTD</span></div>
     </div>
 
     <div class="app-section-header">
