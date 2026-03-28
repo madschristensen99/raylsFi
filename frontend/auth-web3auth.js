@@ -36,7 +36,7 @@ class RaylsWeb3Auth {
       // Initialize Web3Auth
       this.web3auth = new Web3Auth({
         clientId: "BNAILIB4zmrCw3yBoVrLD1OH4f7pjjjyFtd7yukDrL9KE0vIsjL5GeK9QOmp3txislAi9qKx3kEBc-v-1V_GPiU",
-        web3AuthNetwork: "sapphire_mainnet",
+        web3AuthNetwork: "sapphire_devnet",
         chainConfig,
         uiConfig: {
           appName: "Rayls.Fi",
