@@ -84,6 +84,29 @@ This deploys:
 
 **Save the deployed contract addresses!** You'll need them for integration.
 
+## Deployed Contracts
+
+### Public Chain (Rayls Testnet)
+
+| Contract | Address | Explorer |
+|----------|---------|----------|
+| MockSPY | `0xec25ce0d80c44cb8370dc71f6d1d4585244212d7` | [View](https://testnet-explorer.rayls.com/address/0xec25ce0d80c44cb8370dc71f6d1d4585244212d7) |
+| LendingPool | `0x52892eae906f502c4e402301cdd13f3123ead729` | [View](https://testnet-explorer.rayls.com/address/0x52892eae906f502c4e402301cdd13f3123ead729) |
+| UnifiedVault | `0xf418c8cbdc3422b26b28408dc31aa8b4eece54ce` | [View](https://testnet-explorer.rayls.com/address/0xf418c8cbdc3422b26b28408dc31aa8b4eece54ce) |
+| ProtocolTreasury | `0x43d1ecf020297ad344ce740c8e69ce0a2fecb825` | [View](https://testnet-explorer.rayls.com/address/0x43d1ecf020297ad344ce740c8e69ce0a2fecb825) |
+| YieldRouter | `0xd7bd1e8531f79a9fb59b3245a37d8c4602c5b96b` | [View](https://testnet-explorer.rayls.com/address/0xd7bd1e8531f79a9fb59b3245a37d8c4602c5b96b) |
+| ShareToken | `0x3960a2a73b6abbb69f352a691ef5a9339f763c8c` | [View](https://testnet-explorer.rayls.com/address/0x3960a2a73b6abbb69f352a691ef5a9339f763c8c) |
+| AIAttestation | `0x5c8cec43ce559b90ffb4c3f15fabede220cc24c0` | [View](https://testnet-explorer.rayls.com/address/0x5c8cec43ce559b90ffb4c3f15fabede220cc24c0) |
+
+### Privacy Node
+
+**Note:** Privacy Node deployment requires testnet tokens. Contact Nuno (mentor) to fund address: `0x51C5A2987da5262664288636Cc3B7ae28c41a193`
+
+| Contract | Address | Status |
+|----------|---------|--------|
+| UserLedger | TBD | Pending funding |
+| PrivacyGovernor | TBD | Pending funding |
+
 #### 2. Deploy to Privacy Node
 
 Deploy account management contracts:
