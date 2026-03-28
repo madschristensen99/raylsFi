@@ -1,0 +1,21 @@
+{
+  "name": "raylsfi",
+  "version": "1.0.0",
+  "description": "Unified banking on Rayls - Private payments, public yield",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "deploy:public": "./scripts/deploy-public.sh",
+    "deploy:privacy": "./scripts/deploy-privacy.sh",
+    "clean": "forge clean"
+  },
+  "keywords": [
+    "rayls",
+    "defi",
+    "lending",
+    "privacy",
+    "rwa"
+  ],
+  "author": "RaylsFi Team",
+  "license": "MIT"
+}
