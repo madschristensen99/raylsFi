@@ -2040,6 +2040,43 @@ function initAgent() {
   ];
   
   if (hasCalendar) {
+    // Add comprehensive finance-focused calendar suggestions
+    const now = new Date();
+    const hour = now.getHours();
+    const dayOfMonth = now.getDate();
+    
+    // Rotate suggestions based on time and date
+    const financeSuggestions = [];
+    
+    // Meal tracking (time-based)
+    if (hour < 12) {
+      financeSuggestions.push('Track breakfast - $12 cafe');
+      financeSuggestions.push('Schedule grocery shopping today at 5pm');
+    } else if (hour < 17) {
+      financeSuggestions.push('Log lunch expense - $15');
+      financeSuggestions.push('Plan meal prep tomorrow at 6pm');
+    } else {
+      financeSuggestions.push('Track dinner - $20 takeout');
+      financeSuggestions.push('Schedule weekly grocery run tomorrow');
+    }
+    
+    // Major expenses (date-based rotation)
+    if (dayOfMonth <= 5) {
+      financeSuggestions.push('Add rent payment reminder - 1st of month');
+    } else if (dayOfMonth <= 10) {
+      financeSuggestions.push('Schedule utility bill payment');
+    } else if (dayOfMonth <= 15) {
+      financeSuggestions.push('Plan travel budget for next trip');
+    } else if (dayOfMonth <= 20) {
+      financeSuggestions.push('Track subscription payments this month');
+    } else {
+      financeSuggestions.push('Review monthly spending before month end');
+    }
+    
+    // Add top 2 suggestions
+    suggestions.unshift(financeSuggestions[1]);
+    suggestions.unshift(financeSuggestions[0]);
+    
     suggestions.push('What\'s on my calendar today?');
   }
   
@@ -2140,11 +2177,38 @@ async function sendAgentMessage(text) {
         
         // Add calendar-specific suggestions
         if (calendarResponse.type === 'calendar') {
+          // Generate finance-focused event suggestions
+          const now = new Date();
+          const hour = now.getHours();
+          const dayOfMonth = now.getDate();
+          
+          const quickEventSuggestions = [];
+          
+          // Meal tracking (time-based)
+          if (hour < 12) {
+            quickEventSuggestions.push('Track breakfast - $12 cafe');
+            quickEventSuggestions.push('Schedule grocery shopping today at 5pm');
+          } else if (hour < 17) {
+            quickEventSuggestions.push('Log lunch expense - $15');
+            quickEventSuggestions.push('Plan meal prep tomorrow at 6pm');
+          } else {
+            quickEventSuggestions.push('Track dinner - $20 takeout');
+            quickEventSuggestions.push('Schedule weekly grocery run tomorrow');
+          }
+          
+          // Major expenses (date-based)
+          if (dayOfMonth <= 5) {
+            quickEventSuggestions.push('Add rent payment reminder - 1st of month');
+          } else if (dayOfMonth <= 15) {
+            quickEventSuggestions.push('Plan travel budget for upcoming trip');
+          } else {
+            quickEventSuggestions.push('Schedule bill payment review');
+          }
+          
           showSuggestions([
+            ...quickEventSuggestions.slice(0, 3),
             'What\'s on my calendar today?',
-            'Show upcoming events',
-            'Create a new event',
-            'Back to finance help'
+            'Show upcoming events'
           ]);
         } else if (calendarResponse.type === 'error') {
           showSuggestions([
