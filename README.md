@@ -102,12 +102,12 @@ This deploys:
 
 ### Privacy Node
 
-**Note:** Privacy Node deployment requires testnet tokens. Contact Nuno (mentor) to fund address: `0x51C5A2987da5262664288636Cc3B7ae28c41a193`
+| Contract | Address | Explorer |
+|----------|---------|----------|
+| UserLedgerSimple | `0xD4c61A7817446d2253dEED8929a7233AB196C099` | [View](https://blockscout-privacy-node-2.rayls.com/address/0xD4c61A7817446d2253dEED8929a7233AB196C099) |
+| PrivacyGovernorSimple | `0x1389c245ee3581df6DC0851552767C6fEcb36421` | [View](https://blockscout-privacy-node-2.rayls.com/address/0x1389c245ee3581df6DC0851552767C6fEcb36421) |
 
-| Contract | Address | Status |
-|----------|---------|--------|
-| UserLedger | TBD | Pending funding |
-| PrivacyGovernor | TBD | Pending funding |
+**Note:** Privacy Node is feeless and requires Solidity 0.8.19 or earlier (no PUSH0 opcode support).
 
 #### 2. Deploy to Privacy Node
 
